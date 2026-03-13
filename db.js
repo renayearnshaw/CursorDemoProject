@@ -1,9 +1,9 @@
-import Database from 'better-sqlite3';
+import Database from "better-sqlite3";
 
 let db = null;
 
 export function initializeDatabase() {
-  db = new Database('app.db');
+  db = new Database("app.db");
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -14,12 +14,16 @@ export function initializeDatabase() {
     )
   `);
 
+  console.log("Database initialised successfully");
+
   return db;
 }
 
 export function getDatabase() {
   if (!db) {
-    throw new Error('Database has not been initialised. Call initializeDatabase() first.');
+    throw new Error(
+      "Database has not been initialised. Call initializeDatabase() first.",
+    );
   }
   return db;
 }

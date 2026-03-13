@@ -4,8 +4,18 @@ import * as userModel from '../models/user.js';
 export const signup = (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
+    // Basic non-empty check
+    if (!email?.trim() || !password?.trim()) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email address' });
+    }
+    // Password length validation
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
     const existing = userModel.findByEmail(email);
     if (existing) {
@@ -23,7 +33,7 @@ export const signup = (req, res) => {
 export const signin = (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
+    if (!email?.trim() || !password?.trim()) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
     const user = userModel.findByEmail(email);
