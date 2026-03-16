@@ -1,6 +1,8 @@
+import bcrypt from 'bcryptjs';
 import { getDatabase } from '../db.js';
 
-export const createUser = (email, passwordHash) => {
+export const createUser = async (email, password) => {
+  const passwordHash = await bcrypt.hash(password, 10);
   const db = getDatabase();
   const createdAt = new Date().toISOString();
   const stmt = db.prepare(
@@ -14,6 +16,9 @@ export const createUser = (email, passwordHash) => {
     createdAt,
   };
 };
+
+export const verifyPassword = (password, hash) =>
+  bcrypt.compare(password, hash);
 
 export const findByEmail = (email) => {
   const db = getDatabase();

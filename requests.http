@@ -5,3 +5,13 @@ Content-Type: application/json
   "email": "test@test.com",
   "password": "test_password"
 }
+###
+
+POST http://localhost:3000/users/signin
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "test_password"
+}
+###

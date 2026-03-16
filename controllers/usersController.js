@@ -1,7 +1,6 @@
-import crypto from 'crypto';
 import * as userModel from '../models/user.js';
 
-export const signup = (req, res) => {
+export const signup = async (req, res) => {
   try {
     const { email, password } = req.body;
     // Basic non-empty check
@@ -21,8 +20,8 @@ export const signup = (req, res) => {
     if (existing) {
       return res.status(409).json({ error: 'User already exists' });
     }
-    const passwordHash = hashPassword(password);
-    const user = userModel.createUser(email, passwordHash);
+    const user = await userModel.createUser(email, password);
+    // Remove password hash from response
     const { passwordHash: _, ...safe } = user;
     res.status(201).json(safe);
   } catch (err) {
@@ -30,7 +29,7 @@ export const signup = (req, res) => {
   }
 };
 
-export const signin = (req, res) => {
+export const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email?.trim() || !password?.trim()) {
@@ -38,21 +37,15 @@ export const signin = (req, res) => {
     }
     const user = userModel.findByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'No such user' });
     }
-    if (!verifyPassword(password, user.passwordHash)) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!(await userModel.verifyPassword(password, user.passwordHash))) {
+      return res.status(401).json({ error: 'Invalid password' });
     }
+    // Remove password hash from response
     const { passwordHash: _, ...safe } = user;
     res.json(safe);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
-const hashPassword = (password) =>
-  crypto.pbkdf2Sync(password, 'salt', 100000, 64, 'sha512').toString('hex');
-
-const verifyPassword = (password, hash) =>
-  hashPassword(password) === hash;
-
