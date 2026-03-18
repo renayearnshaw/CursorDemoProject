@@ -1,4 +1,5 @@
 import * as userModel from '../models/user.js';
+import { generateToken } from '../util/auth.js';
 
 export const signup = async (req, res) => {
   try {
@@ -23,7 +24,8 @@ export const signup = async (req, res) => {
     const user = await userModel.createUser(email, password);
     // Remove password hash from response
     const { passwordHash: _, ...safe } = user;
-    res.status(201).json(safe);
+    const token = generateToken(user);
+    res.status(201).json({ message: "User created successfully", user: safe, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -44,7 +46,8 @@ export const signin = async (req, res) => {
     }
     // Remove password hash from response
     const { passwordHash: _, ...safe } = user;
-    res.json(safe);
+    const token = generateToken(user);
+    res.json({ message: "User signed in successfully", user: safe, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
