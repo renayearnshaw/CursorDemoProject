@@ -3,8 +3,12 @@ import * as eventModel from '../models/event.js';
 export const createEvent = (req, res) => {
   try {
     const { name, date, description } = req.body;
-    if (!name || !date) {
+    // Basic non-empty check
+    if (!name?.trim() || !date?.trim()) {
       return res.status(400).json({ error: 'Name and date are required.' });
+    }
+    if (isNaN(Date.parse(date))) {
+      return res.status(400).json({ error: 'Invalid date format.' });
     }
     const event = eventModel.createEvent(name, date, description || '');
     res.status(201).json(event);
@@ -39,6 +43,12 @@ export const updateEvent = (req, res) => {
   try {
     const { id } = req.params;
     const { name, date, description } = req.body;
+    if (!name?.trim() || !date?.trim()) {
+      return res.status(400).json({ error: 'Name and date are required.' });
+    }
+    if (isNaN(Date.parse(date))) {
+      return res.status(400).json({ error: 'Invalid date format.' });
+    }
     const event = eventModel.updateEvent(id, { name, date, description });
     if (!event) {
       return res.status(404).json({ error: 'Event not found.' });

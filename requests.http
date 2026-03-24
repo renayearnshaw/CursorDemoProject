@@ -1,3 +1,5 @@
+@token = <<JWT_TOKEN_HERE>>
+
 POST http://localhost:3000/users/signup
 Content-Type: application/json
 
@@ -23,10 +25,27 @@ Content-Type: application/json
 
 POST http://localhost:3000/events
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Test Event",
   "date": "2026-03-23",
   "description": "Test Description"
 }
+###
+
+PUT http://localhost:3000/events/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "April Book Club",
+  "date": "2026-04-23",
+  "description": "First meeting in Chapel Allerton"
+}
+###
+
+DELETE http://localhost:3000/events/2
+Authorization: Bearer {{token}}
+Content-Type: application/json
 ###

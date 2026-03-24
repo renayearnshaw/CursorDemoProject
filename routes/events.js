@@ -6,11 +6,12 @@ import {
   updateEvent,
   deleteEvent,
 } from '../controllers/eventsController.js';
+import { authenticateToken } from '../util/auth.js';
 
 export const router = Router();
 
 router.get('/', getEvents);
 router.get('/:id', getEventById);
-router.post('/', createEvent);
-router.put('/:id', updateEvent);
-router.delete('/:id', deleteEvent);
+router.post('/', authenticateToken, createEvent);
+router.put('/:id', authenticateToken, updateEvent);
+router.delete('/:id', authenticateToken, deleteEvent);
