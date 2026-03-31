@@ -3,6 +3,7 @@ import * as eventModel from '../models/event.js';
 export const createEvent = (req, res) => {
   try {
     const { name, date, description } = req.body;
+    const userId = req.user.id;
     // Basic non-empty check
     if (!name?.trim() || !date?.trim()) {
       return res.status(400).json({ error: 'Name and date are required.' });
@@ -10,7 +11,7 @@ export const createEvent = (req, res) => {
     if (isNaN(Date.parse(date))) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }
-    const event = eventModel.createEvent(name, date, description || '');
+    const event = eventModel.createEvent(name, date, description || '', userId);
     res.status(201).json(event);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -49,10 +50,14 @@ export const updateEvent = (req, res) => {
     if (isNaN(Date.parse(date))) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }
-    const event = eventModel.updateEvent(id, { name, date, description });
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found.' });
+    const existing = eventModel.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: 'Event not found - nothing to update.' });
     }
+    if (String(req.user.id) !== String(existing.userId)) {
+      return res.status(403).json({ error: 'Forbidden - you are not the owner of this event.' });
+    }
+    const event = eventModel.updateEvent(id, { name, date, description });
     res.json(event);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -62,10 +67,14 @@ export const updateEvent = (req, res) => {
 export const deleteEvent = (req, res) => {
   try {
     const { id } = req.params;
-    const event = eventModel.deleteEvent(id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found.' });
+    const existing = eventModel.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: 'Event not found - nothing to delete.' });
     }
+    if (String(req.user.id) !== String(existing.userId)) {
+      return res.status(403).json({ error: 'Forbidden - you are not the owner of this event.' });
+    }
+    const event = eventModel.deleteEvent(id);
     res.json({ message: 'Event deleted.', event });
   } catch (err) {
     res.status(500).json({ error: err.message });

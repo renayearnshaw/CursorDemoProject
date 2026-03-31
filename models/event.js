@@ -1,16 +1,17 @@
 import { getDatabase } from '../db.js';
 
-export const createEvent = (name, date, description = '') => {
+export const createEvent = (name, date, description = '', userId) => {
   const db = getDatabase();
   const stmt = db.prepare(
-    'INSERT INTO events (name, date, description) VALUES (?, ?, ?)'
+    'INSERT INTO events (name, date, description, user_id) VALUES (?, ?, ?, ?)'
   );
-  const result = stmt.run(name, date, description);
+  const result = stmt.run(name, date, description, userId);
   return {
     id: String(result.lastInsertRowid),
     name,
     date,
     description,
+    userId: String(userId),
   };
 };
 
@@ -24,6 +25,7 @@ export const findById = (id) => {
     name: row.name,
     date: row.date,
     description: row.description ?? '',
+    userId: String(row.user_id),
   };
 };
 

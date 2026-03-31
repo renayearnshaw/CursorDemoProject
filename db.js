@@ -19,7 +19,9 @@ export function initializeDatabase() {
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
       date TEXT NOT NULL,
-      description TEXT NOT NULL DEFAULT ''
+      description TEXT NOT NULL DEFAULT '',
+      user_id INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users (id)
     )
   `);
 
