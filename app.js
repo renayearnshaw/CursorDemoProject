@@ -2,9 +2,13 @@ import express from "express";
 import { initializeDatabase } from "./db.js";
 import { router as usersRouter } from "./routes/users.js";
 import { router as eventsRouter } from "./routes/events.js";
+import cors from "cors";
 
 const app = express();
+
+app.use(express.static("public"));
 app.use(express.json());
+app.use(cors());
 
 app.use("/users", usersRouter);
 app.use("/events", eventsRouter);
