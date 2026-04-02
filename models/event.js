@@ -1,17 +1,18 @@
 import { getDatabase } from '../db.js';
 
-export const createEvent = (name, date, description = '', userId) => {
+export const createEvent = (name, date, description = '', userId, image) => {
   const db = getDatabase();
   const stmt = db.prepare(
-    'INSERT INTO events (name, date, description, user_id) VALUES (?, ?, ?, ?)'
+    'INSERT INTO events (name, date, description, user_id, image) VALUES (?, ?, ?, ?, ?)'
   );
-  const result = stmt.run(name, date, description, userId);
+  const result = stmt.run(name, date, description, userId, image);
   return {
     id: String(result.lastInsertRowid),
     name,
     date,
     description,
     userId: String(userId),
+    image: image,
   };
 };
 
@@ -45,11 +46,11 @@ export const updateEvent = (id, updates) => {
   const db = getDatabase();
   const existing = findById(id);
   if (!existing) return null;
-  const { name = existing.name, date = existing.date, description = existing.description } = updates;
+  const { name = existing.name, date = existing.date, description = existing.description, image = existing.image } = updates;
   const stmt = db.prepare(
-    'UPDATE events SET name = ?, date = ?, description = ? WHERE id = ?'
+    'UPDATE events SET name = ?, date = ?, description = ?, image = ? WHERE id = ?'
   );
-  stmt.run(name, date, description, id);
+  stmt.run(name, date, description, image, id);
   return findById(id);
 };
 

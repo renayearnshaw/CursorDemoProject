@@ -24,14 +24,27 @@ Content-Type: application/json
 ###
 
 POST http://localhost:3000/events
-Content-Type: application/json
 Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----RestClientFormBoundary
 
-{
-  "name": "Test Event",
-  "date": "2026-03-23",
-  "description": "Test Description"
-}
+------RestClientFormBoundary
+Content-Disposition: form-data; name="name"
+
+Test Event
+------RestClientFormBoundary
+Content-Disposition: form-data; name="date"
+
+2026-03-23
+------RestClientFormBoundary
+Content-Disposition: form-data; name="description"
+
+Test Description
+------RestClientFormBoundary
+Content-Disposition: form-data; name="image"; filename="bookclub.png"
+Content-Type: image/png
+
+< <<Path/To/Image>>/bookclub.png
+------RestClientFormBoundary--
 ###
 
 PUT http://localhost:3000/events/1
@@ -45,7 +58,17 @@ Authorization: Bearer {{token}}
 }
 ###
 
-DELETE http://localhost:3000/events/2
+DELETE http://localhost:3000/events/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+###
+
+POST http://localhost:3000/events/1/register
+Authorization: Bearer {{token}}
+Content-Type: application/json
+###
+
+DELETE http://localhost:3000/events/1/unregister
 Authorization: Bearer {{token}}
 Content-Type: application/json
 ###

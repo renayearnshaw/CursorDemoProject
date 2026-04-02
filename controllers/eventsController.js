@@ -3,15 +3,19 @@ import * as eventModel from '../models/event.js';
 export const createEvent = (req, res) => {
   try {
     const { name, date, description } = req.body;
+    const image = req.file;
     const userId = req.user.id;
     // Basic non-empty check
     if (!name?.trim() || !date?.trim()) {
       return res.status(400).json({ error: 'Name and date are required.' });
     }
+    if (!image) {
+      return res.status(400).json({ error: 'Image is required.' });
+    }
     if (isNaN(Date.parse(date))) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }
-    const event = eventModel.createEvent(name, date, description || '', userId);
+    const event = eventModel.createEvent(name, date, description || '', userId, image.filename);
     res.status(201).json(event);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -44,8 +48,12 @@ export const updateEvent = (req, res) => {
   try {
     const { id } = req.params;
     const { name, date, description } = req.body;
+    const image = req.file;
     if (!name?.trim() || !date?.trim()) {
       return res.status(400).json({ error: 'Name and date are required.' });
+    }
+    if (!image) {
+      return res.status(400).json({ error: 'Image is required.' });
     }
     if (isNaN(Date.parse(date))) {
       return res.status(400).json({ error: 'Invalid date format.' });
@@ -57,7 +65,7 @@ export const updateEvent = (req, res) => {
     if (String(req.user.id) !== String(existing.userId)) {
       return res.status(403).json({ error: 'Forbidden - you are not the owner of this event.' });
     }
-    const event = eventModel.updateEvent(id, { name, date, description });
+    const event = eventModel.updateEvent(id, { name, date, description, image: image.filename });
     res.json(event);
   } catch (err) {
     res.status(500).json({ error: err.message });
