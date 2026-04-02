@@ -80,3 +80,31 @@ export const deleteEvent = (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const registerForEvent = (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const event = eventModel.registerForEvent(id, userId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found - nothing to register for.' });
+    }
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const unregisterFromEvent = (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const event = eventModel.unregisterFromEvent(id, userId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found - nothing to unregister from.' });
+    }
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

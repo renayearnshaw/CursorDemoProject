@@ -61,3 +61,21 @@ export const deleteEvent = (id) => {
   stmt.run(id);
   return existing;
 };
+
+export const registerForEvent = (id, userId) => {
+  const db = getDatabase();
+  const existing = findById(id);
+  if (!existing) return null;
+  const stmt = db.prepare('INSERT INTO event_registrations (event_id, user_id) VALUES (?, ?)');
+  stmt.run(id, userId);
+  return existing;
+};
+
+export const unregisterFromEvent = (id, userId) => {
+  const db = getDatabase();
+  const existing = findById(id);
+  if (!existing) return null;
+  const stmt = db.prepare('DELETE FROM event_registrations WHERE event_id = ? AND user_id = ?');
+  stmt.run(id, userId);
+  return existing;
+};

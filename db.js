@@ -25,6 +25,16 @@ export function initializeDatabase() {
     )
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS event_registrations (
+      id INTEGER PRIMARY KEY,
+      event_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      FOREIGN KEY (event_id) REFERENCES events (id),
+      FOREIGN KEY (user_id) REFERENCES users (id)
+    )
+  `);
+
   console.log("Database initialised successfully");
 
   return db;
